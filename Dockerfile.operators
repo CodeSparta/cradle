@@ -1,0 +1,4 @@
+FROM quay.io/cloudctl/ubi:micro
+ADD bundle /cradle
+ENTRYPOINT ["/bin/bash"]
+CMD ["cp", "-f", "/cradle/koffer-bundle.custom-redhat-operator-index-catalog.tar.xz", "/cradle/koffer-bundle.custom-redhat-operator-index-catalog.tar.xz.sha256", "/root/bundle/"]
