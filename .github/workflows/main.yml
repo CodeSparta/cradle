@@ -1,0 +1,60 @@
+name: sparta-koffer-redhat-operators
+on:
+# schedule:
+#   - cron: '0 1 * * *'
+  push:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+
+jobs:
+  build:
+    runs-on: sparta-unicorn-rhel
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v2
+
+    - name: Rake Variables
+      run: |
+        set -x ; \
+        echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
+        echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/  Version/{print $2}')" >> ${GITHUB_ENV};\
+        echo;  
+
+    - name: Koffer Bundle | Collector Red Hat Operators
+      run: |
+        set -ex; \
+          && mkdir -p $(pwd)/bundle; \
+          && sudo podman run -it --rm --pull always \
+                             --privileged --device /dev/fuse \
+                             --volume ${HOME}/bundle:/root/bundle:z \
+                             --env BUNDLE='true' --env OPERATORS='cluster-logging' \
+                             --volume ${HOME}/.docker/config.json:/root/.docker/config.json:z \
+                         quay.io/cloudctl/koffer:extra \
+                             bundle --silent --plugin collector-operators \
+          && sudo chown -R ec2-user:ec2-user $(pwd)/bundle \
+          && sudo chmod -R 0777 $(pwd)/bundle \
+         && echo
+
+    - name: Cradle Bundle | Red Hat Operators
+      run: |
+        set -ex; \
+          && mkdir -p ${HOME}/bundle; \
+          && sudo podman build -f ./Dockerfile \
+                               -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators \
+                               -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }}; \
+         && echo;
+
+    - name: Cradle Push | quay.io/CodeSparta/cradle:redhat-operators
+      run: |
+        podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators; \
+        podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }}
