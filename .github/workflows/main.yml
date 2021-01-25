@@ -40,7 +40,7 @@ jobs:
                           --env BUNDLE='true' --env OPERATORS='cluster-logging' \
                           --volume ${HOME}/.docker/config.json:/root/.docker/config.json:z \
                       quay.io/cloudctl/koffer:extra \
-                          bundle --silent --plugin collector-operators \
+                          bundle --silent --plugin collector-operators; \
           sudo chown -R ec2-user:ec2-user $(pwd)/bundle; \
           sudo chmod -R 0777 $(pwd)/bundle; \
          echo;
