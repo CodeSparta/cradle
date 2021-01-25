@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: sparta-unicorn-rhel
+    runs-on: rhel
     steps:
 
     - name: Git Checkout
