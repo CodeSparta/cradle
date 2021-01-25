@@ -48,7 +48,6 @@ jobs:
     - name: Cradle Bundle | Red Hat Operators
       run: |
         set -ex; \
-          mkdir -p ${HOME}/bundle; \
           sudo podman build -f ./Dockerfile.operators \
                             -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators \
                             -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }}; \
