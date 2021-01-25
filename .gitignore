@@ -1,0 +1,7 @@
+actions-runner/*.tar.gz
+actions-runner/bin
+actions-runner/config.sh
+actions-runner/env.sh
+actions-runner/run.sh
+actions-runner/externals
+actions-runner/_diag
