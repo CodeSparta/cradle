@@ -1,0 +1,7 @@
+https://github.com/CodeSparta/cradle/settings/actions/add-new-runner                                                                                                                                                                          
+mkdir actions-runner && cd actions-runner
+sudo ./bin/installdependencies.sh
+curl -O -L https://github.com/actions/runner/releases/download/v2.276.1/actions-runner-linux-x64-2.276.1.tar.gz
+tar xzf ./actions-runner-linux-x64-2.276.1.tar.gz
+./config.sh --url https://github.com/CodeSparta/cradle --token ANBWB7YAPQF33KHJTJWWDIDAB4ZX2
+./run.sh 
