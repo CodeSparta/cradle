@@ -5,3 +5,5 @@ actions-runner/env.sh
 actions-runner/run.sh
 actions-runner/externals
 actions-runner/_diag
+actions-runner/.env
+actions-runner/.path
