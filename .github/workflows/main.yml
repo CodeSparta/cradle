@@ -28,7 +28,7 @@ jobs:
         set -x ; \
         echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
         echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/  Version/{print $2}')" >> ${GITHUB_ENV};\
-        echo;  
+        echo;
 
     - name: Koffer Bundle | Collector Red Hat Operators
       run: |
@@ -36,14 +36,14 @@ jobs:
           && mkdir -p $(pwd)/bundle; \
           && sudo podman run -it --rm --pull always \
                              --privileged --device /dev/fuse \
-                             --volume ${HOME}/bundle:/root/bundle:z \
+                             --volume $(HOME)/bundle:/root/bundle:z \
                              --env BUNDLE='true' --env OPERATORS='cluster-logging' \
                              --volume ${HOME}/.docker/config.json:/root/.docker/config.json:z \
                          quay.io/cloudctl/koffer:extra \
                              bundle --silent --plugin collector-operators \
-          && sudo chown -R ec2-user:ec2-user $(pwd)/bundle \
-          && sudo chmod -R 0777 $(pwd)/bundle \
-         && echo
+          && sudo chown -R ec2-user:ec2-user $(pwd)/bundle; \
+          && sudo chmod -R 0777 $(pwd)/bundle; \
+         && echo;
 
     - name: Cradle Bundle | Red Hat Operators
       run: |
