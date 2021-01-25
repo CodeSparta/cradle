@@ -1,0 +1,7 @@
+*.tar.gz
+./bin
+./config.sh
+./env.sh
+./run.sh
+./externals
+./_diag
