@@ -36,7 +36,7 @@ jobs:
           mkdir -p $(pwd)/bundle; \
           sudo podman run -it --rm --pull always \
                           --privileged --device /dev/fuse \
-                          --volume $(HOME)/bundle:/root/bundle:z \
+                          --volume $(pwd)/bundle:/root/bundle:z \
                           --env BUNDLE='true' --env OPERATORS='cluster-logging' \
                           --volume ${HOME}/.docker/config.json:/root/.docker/config.json:z \
                       quay.io/cloudctl/koffer:extra \
