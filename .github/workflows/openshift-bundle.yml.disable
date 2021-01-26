@@ -58,6 +58,6 @@ jobs:
     - name: Push Cradle | quay.io/CodeSparta/cradle:openshift
       run: |
         set -x; \
-          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
-          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};\
+          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
+          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};\
          echo;
