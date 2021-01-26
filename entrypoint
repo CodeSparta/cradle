@@ -1,15 +1,4 @@
-/bin/bash -x
-
-run_copy () {
-cat <<EOF
-Saving bundles:
-
-$(ls -lh /cradle)
-
-EOF
-
+echo ">> Saving Bundles:
+"
+ls -lh /cradle/*
 cp -rf /cradle/* /bundle/
-
-}
-
-run_copy
