@@ -1,0 +1,68 @@
+name: sparta-koffer-openshift
+on:
+# schedule:
+#   - cron: '0 1 * * *'
+  push:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+
+jobs:
+  build:
+    runs-on: rhel
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v2
+
+    - name: Rake Variables
+      run: |
+        set -x ; \
+        echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
+        echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/  Version/{print $2}')" >> ${GITHUB_ENV};\
+        echo;
+
+    - name: Koffer Bundle | Collector Red Hat OpenShift
+      run: |
+        set -ex; \
+          mkdir -p $(pwd)/bundle; \
+          sudo podman run -it --rm \
+                          --pull always \
+                          --env BUNDLE='true' \
+                          --privileged --device /dev/fuse \
+                          --volume $(pwd)/bundle:/root/bundle:z \
+                          --volume ${HOME}/.docker:/root/.docker:z \
+                      quay.io/cloudctl/koffer:extra bundle \
+                          --silent --config https://codectl.io/docs/config/stable/sparta.yml; \
+          sudo chown -R ec2-user:ec2-user $(pwd)/bundle; \
+          sudo chmod -R 0777 $(pwd)/bundle; \
+         echo;
+
+    - name: Cradle Bundle | Red Hat OpenShift
+      run: |
+        set -ex; \
+          sudo podman build -f ./Dockerfile.openshift \
+                            -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift \
+                            -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }} && \
+          sudo rm -rf $(pwd)/bundle; \
+         echo;
+
+    - name: Cradle Push | quay.io/CodeSparta/cradle:openshift
+      run: |
+        set -x; \
+        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
+        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};
+
+    - name: Cleanup
+      run: |
+        set -x; \
+        podman prune --all --force; \
+        echo;

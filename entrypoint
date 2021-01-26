@@ -1,2 +1,0 @@
-/bin/bash -x
-cp /cradle/* /root/bundle/
