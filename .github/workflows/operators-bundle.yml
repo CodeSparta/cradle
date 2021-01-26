@@ -35,6 +35,7 @@ jobs:
         set -ex; \
           mkdir -p $(pwd)/bundle; \
           sudo podman run -it --rm --pull always \
+                          --env WALLE='true' \
                           --env BUNDLE='true' \
                           --env OPERATORS='cluster-logging,rhsso-operator,servicemeshoperator' \
                           --volume ${HOME}/.docker:/root/.docker:z \
