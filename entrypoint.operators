@@ -1,2 +1,1 @@
-/bin/bash -x
-cp /cradle/{koffer-bundle.custom-redhat-operator-index-catalog.tar.xz,koffer-bundle.custom-redhat-operator-index-catalog.tar.xz.sha256} /root/bundle/
+cp -f koffer-bundle.custom-redhat-operator-index-catalog.tar.xz  koffer-bundle.custom-redhat-operator-index-catalog.tar.xz.sha256 /bundle/

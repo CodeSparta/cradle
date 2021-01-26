@@ -1,6 +1,5 @@
-/bin/bash -x
 cp -f \
       /cradle/koffer-bundle.sparta-iac.tar.xz \
       /cradle/koffer-bundle.tpdk-cloudctl.tar.xz \
       /cradle/koffer-bundle.openshift-4.*.tar.xz \
-   /root/bundle/
+   /bundle/

@@ -49,10 +49,10 @@ jobs:
     - name: Cradle Bundle | Red Hat OpenShift
       run: |
         set -ex; \
-          sudo podman build -f ./Dockerfile.openshift \
-                            -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift \
-                            -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }} && \
-          sudo rm -rf $(pwd)/bundle; \
+          sudo podman build \
+                 -f ./Dockerfile.openshift \
+                 -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift \
+                 -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }} && \
          echo;
 
     - name: Cradle Push | quay.io/CodeSparta/cradle:openshift
@@ -60,9 +60,3 @@ jobs:
         set -x; \
         sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
         sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};
-
-    - name: Cleanup
-      run: |
-        set -x; \
-        podman prune --all --force; \
-        echo;
