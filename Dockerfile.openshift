@@ -1,5 +1,6 @@
 FROM quay.io/cloudctl/ubi:micro
-COPY entrypoint.openshift /bin/entrypoint
-ENTRYPOINT ["/bin/sh", "/bin/entrypoint"]
+COPY entrypoint /entrypoint
 WORKDIR /cradle
+ENTRYPOINT /bin/bash -ex cp -f /cradle/* /bundle/
+USER root
 ADD bundle /cradle
