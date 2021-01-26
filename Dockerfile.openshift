@@ -1,7 +1,0 @@
-FROM quay.io/cloudctl/ubi:micro
-COPY entrypoint /entrypoint
-WORKDIR /cradle
-ENTRYPOINT /entrypoint
-#ENTRYPOINT /bin/sh -ex cp -f /cradle/* /bundle/
-USER root
-ADD bundle /cradle

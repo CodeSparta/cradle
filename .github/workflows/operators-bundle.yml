@@ -1,7 +1,7 @@
 name: sparta-koffer-redhat-operators
 on:
-# schedule:
-#   - cron: '0 1 * * *'
+  schedule:
+    - cron: '0 12 * * TUE'
   push:
     paths-ignore:
     - 'docs/**'
@@ -27,21 +27,20 @@ jobs:
       run: |
         set -x ; \
           echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
-          echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/  Version/{print $2}')" >> ${GITHUB_ENV};\
+          echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/^Name:/{print $2}')" >> ${GITHUB_ENV};\
          echo;
 
     - name: Koffer Bundle | Collector Red Hat Operators
       run: |
         set -ex; \
           mkdir -p $(pwd)/bundle; \
-          sudo podman run -it --rm \
-                          --pull always \
-                          --privileged --device /dev/fuse \
-                          --volume $(pwd)/bundle:/root/bundle:z \
-                          --env BUNDLE='true' --env OPERATORS='cluster-logging' \
+          sudo podman run -it --rm --pull always \
+                          --env BUNDLE='true' \
+                          --env OPERATORS='cluster-logging,rhsso-operator,servicemeshoperator' \
                           --volume ${HOME}/.docker:/root/.docker:z \
-                      quay.io/cloudctl/koffer:extra bundle \
-                          --silent --plugin collector-operators; \
+                          --volume $(pwd)/bundle:/root/bundle:z \
+                          --privileged --device /dev/fuse \
+                      quay.io/cloudctl/koffer:extra bundle --silent --plugin collector-operators; \
           sudo chown -R ec2-user:ec2-user $(pwd)/bundle; \
           sudo chmod -R 0777 $(pwd)/bundle; \
          echo;
@@ -49,7 +48,7 @@ jobs:
     - name: Cradle Bundle | Red Hat Operators
       run: |
         set -ex; \
-          sudo podman build \
+          podman build \
                  -f ./Dockerfile.operators \
                  -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators \
                  -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }}; \
@@ -59,11 +58,12 @@ jobs:
     - name: Cradle Push | quay.io/CodeSparta/cradle:redhat-operators
       run: |
         set -x; \
-          sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators;\
-          sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }};
+          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators;\
+          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }};
 
     - name: Cleanup
       run: |
         set -x; \
+          podman image prune --all --force; \
           sudo podman image prune --all --force; \
          echo;

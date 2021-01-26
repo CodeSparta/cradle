@@ -1,7 +1,7 @@
-name: sparta-koffer-openshift
+name: koffer-bundle-sparta
 on:
-# schedule:
-#   - cron: '0 1 * * *'
+  schedule:
+    - cron: '0 12 * * TUE'
   push:
     paths-ignore:
     - 'docs/**'
@@ -26,11 +26,11 @@ jobs:
     - name: Rake Variables
       run: |
         set -x ; \
-        echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
-        echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/  Version/{print $2}')" >> ${GITHUB_ENV};\
+          echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
+          echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/^Name:/{print $2}')" >> ${GITHUB_ENV};\
         echo;
 
-    - name: Koffer Bundle | Collector Red Hat OpenShift
+    - name: Koffer Bundle | Sparta Bundles
       run: |
         set -ex; \
           mkdir -p $(pwd)/bundle; \
@@ -46,17 +46,18 @@ jobs:
           sudo chmod -R 0777 $(pwd)/bundle; \
          echo;
 
-    - name: Cradle Bundle | Red Hat OpenShift
+    - name: Cradle Bundle | Sparta Bundles
       run: |
         set -ex; \
-          sudo podman build \
+          podman build \
                  -f ./Dockerfile.openshift \
                  -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift \
                  -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }} && \
          echo;
 
-    - name: Cradle Push | quay.io/CodeSparta/cradle:openshift
+    - name: Push Cradle | quay.io/CodeSparta/cradle:openshift
       run: |
         set -x; \
-        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
-        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};
+          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
+          podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};\
+         echo;
