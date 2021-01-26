@@ -1,4 +1,4 @@
 FROM quay.io/cloudctl/ubi:micro
-ADD bundle /cradle
-COPY entrypoint /bin/entrypoint
 ENTRYPOINT ["/bin/entrypoint"]
+COPY entrypoint /bin/entrypoint
+ADD bundle /cradle

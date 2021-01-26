@@ -55,5 +55,5 @@ jobs:
 
     - name: Cradle Push | quay.io/CodeSparta/cradle:redhat-operators
       run: |
-        podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators;\
-        podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }};
+        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators;\
+        sudo podman push quay.io/${{ secrets.GIT_PROJECT }}/bundles:redhat-operators-${{ env.varveropenshift }};
