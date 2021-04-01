@@ -1,0 +1,60 @@
+name: koffer-bundle-sparta
+on:
+  schedule:
+    - cron: '0 12 * * TUE'
+  push:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - '**.md'
+    branches: 
+      - main
+
+jobs:
+  build:
+    runs-on: rhel
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v2
+
+    - name: Rake Variables
+      run: |
+        set -x ; \
+          echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
+          echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/^Name:/{print $2}')" >> ${GITHUB_ENV};\
+        echo;
+
+    - name: Koffer Bundle | Sparta Bundles
+      run: |
+        set -ex; \
+          mkdir -p $(pwd)/bundle; \
+          sudo podman run -it --rm --pull always \
+                          --privileged --device /dev/fuse \
+                          --volume ${HOME}/bundle:/root/bundle:z \
+                          --volume ${HOME}/.docker:/root/.docker:z \
+                          --volume $(pwd)/omnibus.yml:/root/.koffer/config.yml:z \
+                      quay.io/cloudctl/koffer:extra bundle --silent; \
+          sudo chown -R ec2-user:ec2-user $(pwd)/bundle; \
+          sudo chmod -R 0777 $(pwd)/bundle; \
+         echo;
+
+    - name: Cradle Bundle | Sparta Bundles
+      run: |
+        set -ex; \
+          podman build \
+                 -f ./Dockerfile \
+                 -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-omnibus-${{ env.varveropenshift }} && \
+         echo;
+
+    - name: Push Cradle | quay.io/CodeSparta/cradle:openshift
+      run: |
+        set -x; \
+          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift;\
+          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-${{ env.varveropenshift }};\
+         echo;
