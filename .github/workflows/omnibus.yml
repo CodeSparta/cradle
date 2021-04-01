@@ -27,7 +27,7 @@ jobs:
       run: |
         set -x ; \
           echo "varrundate=$(date +%y%m%d%I%M%S)" >> ${GITHUB_ENV};\
-          echo "varveropenshift=$(curl --silent https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/release.txt | awk '/^Name:/{print $2}')" >> ${GITHUB_ENV};\
+          echo "varveropenshift=4.6.21" >> ${GITHUB_ENV};\
         echo;
 
     - name: Koffer Bundle | Sparta Bundles
@@ -49,11 +49,11 @@ jobs:
         set -ex; \
           podman build \
                  -f ./Dockerfile \
-                 -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-omnibus-${{ env.varveropenshift }} && \
+                 -t quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-omnibus-vmware-${{ env.varveropenshift }} && \
          echo;
 
     - name: Push Cradle | quay.io/CodeSparta/cradle:openshift
       run: |
         set -x; \
-          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-omnibus-${{ env.varveropenshift }}; \
+          podman push --authfile /home/ec2-user/.docker/quay.json quay.io/${{ secrets.GIT_PROJECT }}/bundles:openshift-omnibus-vmware-${{ env.varveropenshift }}; \
          echo;
